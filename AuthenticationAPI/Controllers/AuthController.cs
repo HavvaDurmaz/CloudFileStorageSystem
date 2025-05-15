@@ -19,6 +19,7 @@ namespace AuthenticationAPI.Controllers
         {
             var result = await _authService.RegisterAsync(request);
             if (!result)
+
                 return BadRequest("Email already registered.");
             return Ok("User registered successfully.");
         }
@@ -27,8 +28,10 @@ namespace AuthenticationAPI.Controllers
         public async Task<IActionResult> Login(LoginRequest request)
         {
             var token = await _authService.LoginAsync(request);
-            if (token == null)
-                return Unauthorized("Invalid credentials.");
+
+            if (token is null)
+                return Unauthorized("Geçersiz e-posta veya şifre.");
+
             return Ok(new { Token = token });
         }
     }
