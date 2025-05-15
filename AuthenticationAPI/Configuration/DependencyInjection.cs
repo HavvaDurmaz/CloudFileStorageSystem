@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationAPI.Configuration
 {
-    public  static class DependencyInjection
+    public static class DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {
@@ -14,9 +14,6 @@ namespace AuthenticationAPI.Configuration
             services.AddAutoMapper(typeof(Program));
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
             services.AddScoped<IAuthService, AuthService>();
-
-            //// JWT setup vs burada yapılacak
-            //services.AddScoped<ITokenService, TokenService>();
 
             return services;
         }
