@@ -1,17 +1,21 @@
 using System.Text;
 using AuthenticationAPI.Configuration;
 using AuthenticationAPI.Persistence;
+using AuthenticationAPI.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AuthenticationAPI.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
-// Authentication servisi ve JWT doðrulama ekleme
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -28,9 +32,11 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-        ClockSkew = TimeSpan.Zero // Token süresinde hassasiyet için
+        ClockSkew = TimeSpan.Zero 
     };
 });
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 builder.Services.AddControllers();
@@ -43,7 +49,9 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    // JWT Bearer Authentication için Swagger ayarlarý
+
+
+   
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -69,11 +77,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
-
-
-
-
 
 var app = builder.Build();
 

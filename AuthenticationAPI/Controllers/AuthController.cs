@@ -1,5 +1,6 @@
 ﻿using AuthenticationAPI.Dtos;
 using AuthenticationAPI.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationAPI.Controllers
@@ -56,7 +57,13 @@ namespace AuthenticationAPI.Controllers
             return Ok(new { message = "Çıkış başarılı." });
         }
 
-
+        [HttpGet("validate-token")]
+        [Authorize] // Token doğrulama için gerekli
+        public IActionResult ValidateToken()
+        {
+            // Token geçerliyse buraya gelir.
+            return Ok(new { Valid = true });
+        }
 
     }
 }
