@@ -3,9 +3,6 @@ using System.Text;
 using FileMetadataAPI.Application.Queries;
 using FileMetadataAPI.Configuration.Jwt;
 using FileMetadataAPI.Infrastructure;
-using FileMetadataAPI.Infrastructure.Interface;
-using FileMetadataAPI.Infrastructure.Repositories;
-using FileMetadataAPI.Mapping;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +15,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IFileMetadataRepository, FileMetadataRepository>();
+
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<Program>()
 );
@@ -72,7 +70,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

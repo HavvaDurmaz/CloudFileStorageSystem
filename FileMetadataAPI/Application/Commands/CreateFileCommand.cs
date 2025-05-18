@@ -7,7 +7,8 @@ namespace FileMetadataAPI.Application.Commands
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public SharingType SharingType { get; set; }  // Enum string olarak gelecek (örnek: "Private")
+        public SharingType SharingType { get; set; }  
         public string FileExtension { get; set; } = null!;
+        public int OwnerId { get; set; }
     }
 }

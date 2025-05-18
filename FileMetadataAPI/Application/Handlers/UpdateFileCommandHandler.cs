@@ -23,11 +23,14 @@ namespace FileMetadataAPI.Application.Handlers
 
         public async Task<FileDto> Handle(UpdateFileCommand request, CancellationToken cancellationToken)
         {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
                 throw new UnauthorizedAccessException("Kullanıcı kimliği bulunamadı.");
 
             var userId = int.Parse(userIdClaim.Value);
+
+            if (!int.TryParse(userIdClaim.Value, out int User))
+                throw new UnauthorizedAccessException("UserId tipi uygun değil.");
 
             var file = await _context.Files
                 .FirstOrDefaultAsync(f => f.Id == request.Id && f.OwnerId == userId, cancellationToken);

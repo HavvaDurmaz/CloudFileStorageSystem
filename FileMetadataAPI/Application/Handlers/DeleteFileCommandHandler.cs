@@ -21,7 +21,6 @@ namespace FileMetadataAPI.Application.Handlers
             var file = await _context.Files.FindAsync(request.Id);
             if (file == null)
             {
-                // İstersen burada hata fırlatabilir ya da farklı bir dönüş yapabilirsin
                 return Unit.Value;
             }
 

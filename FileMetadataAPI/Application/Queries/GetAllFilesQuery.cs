@@ -6,4 +6,5 @@ namespace FileMetadataAPI.Application.Queries
     public class GetAllFilesQuery : IRequest<List<FileDto>>
     {
     }
+
 }
