@@ -1,5 +1,6 @@
 ﻿using AuthenticationAPI.Persistence;
 using AuthenticationAPI.Services.Auth;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationAPI.Configuration
@@ -12,7 +13,7 @@ namespace AuthenticationAPI.Configuration
                 options.UseSqlite(config.GetConnectionString("DefaultConnection")));
 
             services.AddAutoMapper(typeof(Program));
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            services.AddMediatR(typeof(Program).Assembly);
             services.AddScoped<IAuthService, AuthService>();
 
             return services;
