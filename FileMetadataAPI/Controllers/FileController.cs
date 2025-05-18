@@ -1,4 +1,5 @@
-﻿using FileMetadataAPI.Application.Commands;
+﻿using System.Security.Claims;
+using FileMetadataAPI.Application.Commands;
 using FileMetadataAPI.Application.Dtos;
 using FileMetadataAPI.Application.Queries;
 using FileMetadataAPI.Domain.Enums;
@@ -16,69 +17,65 @@ namespace FileMetadataAPI.Controllers
 
         private readonly IMediator _mediator;
 
-        // ✅ Constructor ile IMediator enjekte ediliyor
-        public FileController(IMediator mediator)
+        public FileController(IMediator mediator )
         {
             _mediator = mediator;
+           
         }
-        [HttpGet("test")]
-        public IActionResult Test()
+    
+
+        [Authorize]
+        [HttpGet("test-userid")]
+        public IActionResult TestUserId()
         {
-            return Ok("Bu endpoint JWT gerektiriyor.");
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+            var userIdValue = userIdClaim.Value;
+
+            return Ok(new
+            {
+                UserIdClaimValue = userIdValue,
+                UserIdClaimType = userIdValue.GetType().Name
+            });
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllFiles()
         {
-            var query = new GetAllFilesQuery();
-            var result = await _mediator.Send(query);
-            return Ok(result);
+            var files = await _mediator.Send(new GetAllFilesQuery());
+            return Ok(files);
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> Create([FromForm] CreateFileRequest request)
-        //{
-        //    // Gelen enum zaten tip olarak doğru olduğu için ekstra parse gerekmiyor
-
-        //    var fileName = request.File.FileName;
-        //    var fileExtension = Path.GetExtension(fileName);
-
-        //    var command = new CreateFileCommand
-        //    {
-        //        Name = request.Name,
-        //        Description = request.Description,
-        //        SharingType = request.SharingType,  // enum direkt atanıyor
-        //        FileExtension = fileExtension
-        //    };
-
-        //    var result = await _mediator.Send(command);
-
-        //    // Dosyayı kaydetme işlemi, mesela FileStorageAPI’ye göndermek burada olabilir
-
-        //    return Ok(result);
-        //}
 
 
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateFileRequest request)
         {
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("Kullanıcı kimliği bulunamadı.");
+
+            var ownerId = int.Parse(userIdClaim.Value);
+
             var command = new CreateFileCommand
             {
                 Name = request.Name,
                 Description = request.Description,
                 SharingType = request.SharingType,
-                FileExtension = Path.GetExtension(request.File.FileName)
+                FileExtension = Path.GetExtension(request.File.FileName),
+                OwnerId = ownerId
             };
 
             var result = await _mediator.Send(command);
             return Ok(result);
+
         }
-
-
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateFileCommand command)
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateFileCommand command)
         {
             if (id != command.Id)
                 return BadRequest("ID uyuşmuyor.");
@@ -86,6 +83,7 @@ namespace FileMetadataAPI.Controllers
             var updated = await _mediator.Send(command);
             return Ok(updated);
         }
+
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -93,6 +91,7 @@ namespace FileMetadataAPI.Controllers
             await _mediator.Send(new DeleteFileCommand { Id = id });
             return NoContent();
         }
+
     }
 }
 

@@ -1,9 +1,16 @@
-﻿namespace FileMetadataAPI.Domain.Enums
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FileMetadataAPI.Domain.Enums
 {
     public enum SharingType
     {
-        Private = 1,      // Özel
-        Public = 2,       // Herkese Açık
-        SharedWithUsers = 3
+        [Display(Name = "Gizli")]
+        Private = 1,
+        // Özel
+        [Display(Name = "Herkese Açık")]
+        Public = 2,
+
+        [Display(Name = "Sınırlı")]
+        Restricted = 3
     }
 }

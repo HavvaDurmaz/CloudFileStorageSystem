@@ -6,49 +6,45 @@ using FileMetadataAPI.Domain.Entities;
 using FileMetadataAPI.Domain.Enums;
 using FileMetadataAPI.Infrastructure;
 using MediatR;
+using FileMetadataAPI.Application.Dtos;
 
 namespace FileMetadataAPI.Application.Handlers
 {
     public class CreateFileCommandHandler : IRequestHandler<CreateFileCommand, int>
     {
         private readonly ApplicationDbContext _context;
-        public CreateFileCommandHandler(ApplicationDbContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CreateFileCommandHandler(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
-
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<int> Handle(CreateFileCommand request, CancellationToken cancellationToken)
         {
+            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new UnauthorizedAccessException("Kullanıcı kimliği bulunamadı.");
 
+            var userId = int.Parse(userIdClaim.Value);
 
-            // Yeni File entity oluşturuyoruz
             var file = new Domain.Entities.File
             {
-                Name = request.Name, // Bu geçici, hemen sonra güncellenecek
+                Name = request.Name,
                 Description = request.Description,
                 SharingType = request.SharingType,
-                FileExtension = request.FileExtension
+                FileExtension = request.FileExtension,
+                OwnerId = userId
             };
 
-            // Veritabanına ekle ve kaydet
-            await _context.Files.AddAsync(file, cancellationToken);
+            _context.Files.Add(file);
             await _context.SaveChangesAsync(cancellationToken);
 
-            // Dosya adını ID + uzantı olarak güncelle
-            file.Name = $"{file.Id}{file.FileExtension}";
-
-            // Güncelle ve kaydet
-            _context.Files.Update(file);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            // Kaydedilen dosyanın ID'sini döndür
-            return file.Id;
-
-
+            return file.Id; 
         }
-
-
     }
-    
 }
+
+
+

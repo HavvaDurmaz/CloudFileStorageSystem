@@ -22,8 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\" />
+    <Folder Include="Infrastructure\Interface\" />
     <Folder Include="Infrastructure\Persistence\" />
+    <Folder Include="Infrastructure\Repositories\" />
     <Folder Include="Infrastructure\Service\" />
   </ItemGroup>
 
