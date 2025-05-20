@@ -60,7 +60,10 @@ builder.Services.AddSwaggerGen(config =>
 }});
 });
 
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+Console.WriteLine("Metadata JWT KEY: " + jwtSettings.Key);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -78,7 +81,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.FromMinutes(2)
     };
 });
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using FileStorageAPI.Models;
+using System.Net.Http.Headers;
 
 namespace FileStorageAPI.Controllers
 {
@@ -37,7 +38,6 @@ namespace FileStorageAPI.Controllers
 
             return Ok(files);
         }
-
 
 
         [HttpPost("upload")]
@@ -97,7 +97,54 @@ namespace FileStorageAPI.Controllers
         }
 
 
-    }
+        [HttpPost("upload-with-metadata")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadWithMetadata([FromForm] UploadWithMetadataRequest request)
+        {
+            if (request.File == null || request.File.Length == 0)
+                return BadRequest("Dosya bulunamadı.");
 
+            var uploadPath = Path.Combine(_env.ContentRootPath, "Uploads");
+
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+
+            var filePath = Path.Combine(uploadPath, request.File.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await request.File.CopyToAsync(stream);
+            }
+
+            // Metadata API'ye bilgi gönder
+            var metadataPayload = new
+            {
+                Name = request.Name,
+                Description = request.Description,
+                SharingType = request.SharingType,
+                FileExtension = Path.GetExtension(request.File.FileName),
+                OwnerId = 1 // test için sabit, sonra JWT'den alınacak
+            };
+
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri("http://localhost:5296");
+            var accessToken = HttpContext.Request.Headers["Authorization"].ToString();
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", accessToken.Replace("Bearer ", ""));
+            }
+
+            var response = await httpClient.PostAsJsonAsync("/api/files", metadataPayload);
+
+            if (!response.IsSuccessStatusCode)
+                return StatusCode((int)response.StatusCode, "Metadata kaydı başarısız.");
+
+            return Ok(new { message = "Dosya ve metadata başarıyla yüklendi." });
+        }
+
+    }
 }
+
+
 
