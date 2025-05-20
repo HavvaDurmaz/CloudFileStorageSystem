@@ -1,7 +1,9 @@
-﻿using AuthenticationAPI.Dtos;
+﻿using System.Security.Claims;
+using AuthenticationAPI.Dtos;
 using AuthenticationAPI.Services.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -14,6 +16,29 @@ namespace AuthenticationAPI.Controllers
         {
             _authService = authService;
         }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized();
+
+            int userId = int.Parse(userIdClaim.Value);
+            var user = await _authService.GetCurrentUserAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(new
+            {
+                user.Id,
+                user.Name,
+                user.Email
+            });
+        }
+
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequest request)

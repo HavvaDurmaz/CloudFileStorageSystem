@@ -53,6 +53,8 @@ namespace FileMetadataAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateFileRequest request)
         {
+            Console.WriteLine(">>> CONTROLLER çalıştı >>>");
+
             var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
                 return Unauthorized("Kullanıcı kimliği bulunamadı.");
@@ -69,6 +71,8 @@ namespace FileMetadataAPI.Controllers
             };
 
             var result = await _mediator.Send(command);
+            Console.WriteLine(">>> MEDIATOR çalıştı, sonuç: " + result);
+
             return Ok(result);
 
         }

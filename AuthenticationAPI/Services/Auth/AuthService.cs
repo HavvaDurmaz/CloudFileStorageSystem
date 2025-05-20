@@ -23,7 +23,10 @@ namespace AuthenticationAPI.Services.Auth
             _jwtSettings = jwtSettings.Value;
         }
 
-
+        public async Task<User?> GetCurrentUserAsync(int userId)
+        {
+            return await _context.Users.FindAsync(userId);
+        }
 
         public async Task<bool> RegisterAsync(RegisterRequest request)
         {

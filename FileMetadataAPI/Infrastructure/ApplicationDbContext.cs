@@ -16,6 +16,8 @@ namespace FileMetadataAPI.Infrastructure
         {
             modelBuilder.Entity<Domain.Entities.File>().ToTable("files");
             modelBuilder.Entity<Domain.Entities.FileShare>()
+                .HasKey(fs => new { fs.FileId, fs.UserId });
+            modelBuilder.Entity<Domain.Entities.FileShare>()
                 .HasOne(fs => fs.File)
                 .WithMany(f => f.FileShares)
                 .HasForeignKey(fs => fs.FileId);

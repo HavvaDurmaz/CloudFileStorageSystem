@@ -9,6 +9,7 @@ namespace AuthenticationAPI.Services.Auth
         Task<TokenResponse?> LoginAsync(LoginRequest request);
         Task<TokenResponse?> RefreshTokenAsync(string refreshToken);
         Task<bool> RevokeRefreshTokenAsync(string refreshToken);
+        Task<User?> GetCurrentUserAsync(int userId);
 
     }
 }

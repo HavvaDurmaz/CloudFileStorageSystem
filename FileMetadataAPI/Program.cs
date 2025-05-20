@@ -8,20 +8,32 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using FileMetadataAPI.Application.Mappings;
+using FileMetadataAPI.Application.Handlers;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+Console.WriteLine("Program baþladý.");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+try
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
+catch (Exception ex)
+{
+    Console.WriteLine("DbContext eklenirken hata oluþtu: " + ex.Message);
+}
 
 builder.Services.AddControllers();
-
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssemblyContaining<Program>()
-);
+    cfg.RegisterServicesFromAssemblyContaining<CreateFileCommandHandler>());
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(config =>
@@ -84,5 +96,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+Console.WriteLine("app.Run()’a ulaþýldý.");
 app.Run();
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.CanConnect();  // Baðlantý testi
+    Console.WriteLine("PostgreSQL baðlantýsý baþarýlý!");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Veritabanýna baðlanýlamadý: " + ex.Message);
+}

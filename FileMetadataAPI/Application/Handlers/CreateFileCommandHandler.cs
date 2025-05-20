@@ -21,27 +21,58 @@ namespace FileMetadataAPI.Application.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
+        //public async Task<int> Handle(CreateFileCommand request, CancellationToken cancellationToken)
+        //{
+        //    var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+        //    if (userIdClaim == null)
+        //        throw new UnauthorizedAccessException("Kullanıcı kimliği bulunamadı.");
+
+        //    var userId = int.Parse(userIdClaim.Value);
+
+        //    var file = new Domain.Entities.File
+        //    {
+        //        Name = request.Name,
+        //        Description = request.Description,
+        //        SharingType = request.SharingType,
+        //        FileExtension = request.FileExtension,
+        //        OwnerId = userId
+        //    };
+
+        //    _context.Files.Add(file);
+        //    await _context.SaveChangesAsync(cancellationToken);
+
+        //    return file.Id; 
+        //}
+
+
         public async Task<int> Handle(CreateFileCommand request, CancellationToken cancellationToken)
         {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                throw new UnauthorizedAccessException("Kullanıcı kimliği bulunamadı.");
 
-            var userId = int.Parse(userIdClaim.Value);
+            Console.WriteLine(">>> HANDLER çalıştı >>>");
 
+
+
+            Console.WriteLine($"Name: {request.Name}");
+            Console.WriteLine($"Description: {request.Description}");
+            Console.WriteLine($"Extension: {request.FileExtension}");
+            Console.WriteLine($"Owner: {request.OwnerId}");
             var file = new Domain.Entities.File
             {
                 Name = request.Name,
                 Description = request.Description,
                 SharingType = request.SharingType,
                 FileExtension = request.FileExtension,
-                OwnerId = userId
+                OwnerId = request.OwnerId,
+                UploadDate = DateTime.UtcNow
             };
 
             _context.Files.Add(file);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync();
 
-            return file.Id; 
+            Console.WriteLine("EKLENDİ: " + file.Name + " / ID: " + file.Id);
+            Console.WriteLine("EKLENDİ: " + file.Name);
+
+            return file.Id;
         }
     }
 }

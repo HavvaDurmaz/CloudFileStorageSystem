@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructure\Interface\**" />
+    <Compile Remove="Infrastructure\Persistence\**" />
+    <Compile Remove="Infrastructure\Repositories\**" />
+    <Compile Remove="Infrastructure\Service\**" />
+    <Content Remove="Infrastructure\Interface\**" />
+    <Content Remove="Infrastructure\Persistence\**" />
+    <Content Remove="Infrastructure\Repositories\**" />
+    <Content Remove="Infrastructure\Service\**" />
+    <EmbeddedResource Remove="Infrastructure\Interface\**" />
+    <EmbeddedResource Remove="Infrastructure\Persistence\**" />
+    <EmbeddedResource Remove="Infrastructure\Repositories\**" />
+    <EmbeddedResource Remove="Infrastructure\Service\**" />
+    <None Remove="Infrastructure\Interface\**" />
+    <None Remove="Infrastructure\Persistence\**" />
+    <None Remove="Infrastructure\Repositories\**" />
+    <None Remove="Infrastructure\Service\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -19,13 +38,6 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Infrastructure\Interface\" />
-    <Folder Include="Infrastructure\Persistence\" />
-    <Folder Include="Infrastructure\Repositories\" />
-    <Folder Include="Infrastructure\Service\" />
   </ItemGroup>
 
 </Project>
