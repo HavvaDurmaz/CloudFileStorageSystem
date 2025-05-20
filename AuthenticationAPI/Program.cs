@@ -92,3 +92,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+Console.WriteLine(">>> DEBUG: JWT yapýlandýrmasý yüklendi mi? <<<");
+Console.WriteLine(">>> JWT KEY: " + jwtSettings.Key);

@@ -10,24 +10,37 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileMetadataAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
+    [Route("api/files")]
     [Authorize]
     public class FileController : ControllerBase
     {
 
         private readonly IMediator _mediator;
 
-        public FileController(IMediator mediator )
+        public FileController(IMediator mediator)
         {
             _mediator = mediator;
-           
+
         }
-    
+
+        [HttpGet("test-token")]
+        public IActionResult TestToken()
+        {
+            var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized("Kullanıcı token'ı çözülemedi.");
+
+            return Ok("Token geçerli, kullanıcı ID: " + userIdClaim.Value);
+        }
+
 
         [Authorize]
         [HttpGet("test-userid")]
         public IActionResult TestUserId()
         {
+            var authHeader = Request.Headers["Authorization"].ToString();
+            Console.WriteLine(">>> Auth Header: " + authHeader);
             var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
                 return Unauthorized("Kullanıcı kimliği bulunamadı.");
@@ -51,6 +64,7 @@ namespace FileMetadataAPI.Controllers
 
 
         [HttpPost]
+
         public async Task<IActionResult> Create([FromForm] CreateFileRequest request)
         {
             Console.WriteLine(">>> CONTROLLER çalıştı >>>");
