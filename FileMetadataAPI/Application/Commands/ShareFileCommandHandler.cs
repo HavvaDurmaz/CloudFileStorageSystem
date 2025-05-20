@@ -16,7 +16,6 @@ namespace FileMetadataAPI.Application.Commands
 
         public async Task<bool> Handle(ShareFileCommand request, CancellationToken cancellationToken)
         {
-            // Aynı kullanıcıya aynı dosya zaten paylaşıldıysa, işlemi engelle
             var alreadyShared = await _context.FileShares
                 .AnyAsync(fs => fs.FileId == request.FileId && fs.UserId == request.UserId, cancellationToken);
 

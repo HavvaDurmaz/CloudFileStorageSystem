@@ -21,30 +21,6 @@ namespace FileMetadataAPI.Application.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        //public async Task<int> Handle(CreateFileCommand request, CancellationToken cancellationToken)
-        //{
-        //    var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-        //    if (userIdClaim == null)
-        //        throw new UnauthorizedAccessException("Kullanıcı kimliği bulunamadı.");
-
-        //    var userId = int.Parse(userIdClaim.Value);
-
-        //    var file = new Domain.Entities.File
-        //    {
-        //        Name = request.Name,
-        //        Description = request.Description,
-        //        SharingType = request.SharingType,
-        //        FileExtension = request.FileExtension,
-        //        OwnerId = userId
-        //    };
-
-        //    _context.Files.Add(file);
-        //    await _context.SaveChangesAsync(cancellationToken);
-
-        //    return file.Id; 
-        //}
-
-
         public async Task<int> Handle(CreateFileCommand request, CancellationToken cancellationToken)
         {
 

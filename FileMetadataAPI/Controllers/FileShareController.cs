@@ -31,7 +31,7 @@ namespace FileMetadataAPI.Controllers
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine("InvalidOperationException yakalandı: " + ex.Message);
-                return BadRequest(ex.Message); // Kullanıcıya özel hata mesajı döner
+                return BadRequest(ex.Message); 
             }
             catch (Exception ex)
             {

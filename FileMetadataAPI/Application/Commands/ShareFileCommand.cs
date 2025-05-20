@@ -6,7 +6,7 @@ namespace FileMetadataAPI.Application.Commands
     {
         public int FileId { get; set; }
         public int UserId { get; set; }
-        public string Permission { get; set; }  // "Read" veya "Edit"
+        public string Permission { get; set; }  
     }
 
 }
